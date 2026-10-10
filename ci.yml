@@ -1,25 +1,20 @@
-name: RaceDay Continuous Integration
+```yaml
+name: RaceDay CI
 
 on:
   push:
   pull_request:
-    branches:
-      - main
-      - develop
-
-permissions:
-  contents: read
+  workflow_dispatch:
 
 jobs:
   build-and-test:
-    name: Build and test RaceDay
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
@@ -30,15 +25,6 @@ jobs:
       - name: Build solution
         run: dotnet build RaceDay.sln --configuration Release --no-restore
 
-      - name: Run automated tests
-        run: dotnet test RaceDay.sln --configuration Release --no-build --logger "console;verbosity=normal"
-
-      - name: Publish API
-        run: dotnet publish src/RaceDay.Api/RaceDay.Api.csproj --configuration Release --no-build --output ./publish
-
-      - name: Upload published API artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: RaceDay-API
-          path: ./publish
-          if-no-files-found: error
+      - name: Run tests
+        run: dotnet test RaceDay.sln --configuration Release --no-build
+```
