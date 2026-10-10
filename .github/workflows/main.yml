@@ -1,0 +1,38 @@
+```yaml
+name: RaceDay CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and Test RaceDay
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore RaceDay.Api.csproj
+
+      - name: Build API
+        run: dotnet build RaceDay.Api.csproj --configuration Release --no-restore
+
+      - name: Run automated tests
+        run: |
+          dotnet restore RaceDay.Api.Tests.csproj
+          dotnet test RaceDay.Api.Tests.csproj --configuration Release
+```
