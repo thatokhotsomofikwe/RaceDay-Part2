@@ -1,0 +1,29 @@
+name: RaceDay API CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore RaceDay-Part2/RaceDay.sln
+
+    - name: Build API solution
+      run: dotnet build RaceDay-Part2/RaceDay.sln --no-restore --configuration Release
+
+    - name: Run unit and integration tests
+      run: dotnet test RaceDay-Part2/RaceDay.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
